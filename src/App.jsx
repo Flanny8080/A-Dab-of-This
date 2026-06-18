@@ -512,6 +512,63 @@ export default function App() {
   const [jWhere, setJWhere] = useState(""); const [jReorder, setJReorder] = useState(true);
   const [jBusy, setJBusy] = useState(false);
 
+// ── AI Chat ───────────────────────────────────────────────────────────────
+const [chatOpen, setChatOpen] = useState(false);
+const [chatMessages, setChatMessages] = useState([
+  { role: "assistant", content: "Hey! I'm your AI bartender 🍸 Ask me anything — what to order, what's in a drink, which spirit suits your mood, or what you can make with what you've got." }
+]);
+const [chatInput, setChatInput] = useState("");
+const [chatBusy, setChatBusy] = useState(false);
+
+async function sendChat() {
+  if (!chatInput.trim() || chatBusy) return;
+  const userMsg = { role: "user", content: chatInput.trim() };
+  const newMessages = [...chatMessages, userMsg];
+  setChatMessages(newMessages);
+  setChatInput("");
+  setChatBusy(true);
+
+  const savedNames = savedDrinks.map(d => d.name).join(", ") || "none yet";
+  const ratedList = BOOK_DRINKS.filter(d => myRatings[d.id])
+    .map(d => `${d.name} (${myRatings[d.id]}/5)`).join(", ") || "none yet";
+  const userName = user?.username || "friend";
+
+  const systemPrompt = `You are a witty, fun AI bartender for the cocktail app "A Dab of This, A Dab of That" by Andrew Flannigan — a bartender who wrote his recipe book during a military deployment in Afghanistan. You know every drink in the book. Be clever, warm, and occasionally make a good drink pun. Keep responses concise (2-4 sentences usually). Never be boring.
+
+The user's name is ${userName}.
+Their saved drinks: ${savedNames}.
+Their rated drinks: ${ratedList}.
+
+Here are all 183 drinks in the book by category:
+${BOOK_CATEGORIES.map(cat => {
+  const drinks = BOOK_DRINKS.filter(d => d.cat === cat.id);
+  return `${cat.label}: ${drinks.map(d => `${d.name} (${d.ingredients.join(", ")})`).join(" | ")}`;
+}).join("\n")}
+
+Spirits guide covers: Whiskey, Bourbon, Scotch, Rum, Gin, Vodka, Tequila, Brandy & Cognac.
+
+When recommending drinks, reference the actual recipes. If someone asks what they can make with specific spirits, check the ingredients above. Have fun with it.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: newMessages.map(m => ({ role: m.role, content: m.content })),
+      }),
+    });
+    const data = await response.json();
+    const reply = data.content?.[0]?.text || "Sorry, I spilled my drink. Try again?";
+    setChatMessages(msgs => [...msgs, { role: "assistant", content: reply }]);
+  } catch {
+    setChatMessages(msgs => [...msgs, { role: "assistant", content: "Lost my train of thought — probably had one too many. Try again!" }]);
+  }
+  setChatBusy(false);
+}
+  
   const isPremium = !!user?.is_premium;
 
   // ── Helpers ───────────────────────────────────────────────────────────────
@@ -1177,6 +1234,49 @@ export default function App() {
           </div>
         );
       })()}
+
+      {/* AI CHAT */}
+<div style={{ position:"fixed", bottom:20, right:20, zIndex:300 }}>
+  {chatOpen && (
+    <div style={{ position:"absolute", bottom:60, right:0, width:320, height:440, background:"#111008", border:"1px solid #221808", borderRadius:14, display:"flex", flexDirection:"column", overflow:"hidden", boxShadow:"0 8px 32px rgba(0,0,0,0.7)" }}>
+      <div style={{ background:"linear-gradient(135deg,#1A1208,#111008)", borderBottom:"1px solid #221808", padding:"11px 14px", display:"flex", justifyContent:"space-between", alignItems:"center" }}>
+        <div>
+          <div style={{ fontSize:"0.85rem", fontStyle:"italic", background:"linear-gradient(135deg,#F0A500,#C8821A)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>🍸 AI Bartender</div>
+          <div style={{ fontSize:"0.58rem", color:"#3A2E20", textTransform:"uppercase", letterSpacing:"1px" }}>Powered by Claude</div>
+        </div>
+        <button onClick={()=>setChatOpen(false)} style={{ background:"#1A1510", border:"none", color:"#7A6A55", width:24, height:24, borderRadius:"50%", cursor:"pointer", fontSize:"0.75rem" }}>✕</button>
+      </div>
+      <div style={{ flex:1, overflowY:"auto", padding:12, display:"flex", flexDirection:"column", gap:9 }}>
+        {chatMessages.map((m, i) => (
+          <div key={i} style={{ display:"flex", justifyContent:m.role==="user"?"flex-end":"flex-start" }}>
+            <div style={{ maxWidth:"82%", padding:"8px 11px", borderRadius:m.role==="user"?"12px 12px 3px 12px":"12px 12px 12px 3px", background:m.role==="user"?"linear-gradient(135deg,#C8821A,#F0A500)":"#1A1510", color:m.role==="user"?"#0A0806":"#C8A97E", fontSize:"0.76rem", lineHeight:1.6, fontStyle:m.role==="assistant"?"italic":"normal" }}>
+              {m.content}
+            </div>
+          </div>
+        ))}
+        {chatBusy && (
+          <div style={{ display:"flex", justifyContent:"flex-start" }}>
+            <div style={{ padding:"8px 14px", borderRadius:"12px 12px 12px 3px", background:"#1A1510", color:"#5A4030", fontSize:"0.76rem", fontStyle:"italic" }}>Shaking something up...</div>
+          </div>
+        )}
+      </div>
+      <div style={{ borderTop:"1px solid #221808", padding:10, display:"flex", gap:7 }}>
+        <input
+          style={{ ...S.input, flex:1, padding:"7px 10px", fontSize:"0.76rem" }}
+          placeholder="Ask your bartender..."
+          value={chatInput}
+          onChange={e=>setChatInput(e.target.value)}
+          onKeyDown={e=>e.key==="Enter"&&sendChat()}
+        />
+        <button onClick={sendChat} disabled={chatBusy} style={{ padding:"7px 12px", background:"linear-gradient(135deg,#C8821A,#F0A500)", border:"none", borderRadius:7, color:"#0A0806", cursor:"pointer", fontSize:"0.8rem", fontWeight:"bold", opacity:chatBusy?0.5:1 }}>→</button>
+      </div>
+    </div>
+  )}
+  <button onClick={()=>setChatOpen(o=>!o)} style={{ width:50, height:50, borderRadius:"50%", background:"linear-gradient(135deg,#C8821A,#F0A500)", border:"none", cursor:"pointer", fontSize:"1.4rem", boxShadow:"0 4px 16px rgba(200,130,26,0.4)", display:"flex", alignItems:"center", justifyContent:"center" }}>
+    🍸
+  </button>
+</div>
+      
     </div>
   );
 }
