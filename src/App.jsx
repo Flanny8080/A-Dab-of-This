@@ -561,6 +561,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
       }),
     });
     const data = await response.json();
+    console.log("API response:", JSON.stringify(data));
     const reply = data.content?.[0]?.text || "Sorry, I spilled my drink. Try again?";
     setChatMessages(msgs => [...msgs, { role: "assistant", content: reply }]);
   } catch {
