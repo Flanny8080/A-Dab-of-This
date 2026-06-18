@@ -302,9 +302,9 @@ function saveSession(d) { try { sessionStorage.setItem(SESSION_KEY, JSON.stringi
 
 // Average community ratings from shared storage
 function calcAvg(ratingsMap) {
-  const vals = Object.values(ratingsMap || {}).filter(v => v > 0);
-  if (!vals.length) return null;
-  return (vals.reduce((a, b) => a + b, 0) / vals.length);
+  if (!ratingsMap || typeof ratingsMap !== "object") return { avg: null, count: 0 };
+  const vals = Object.values(ratingsMap).filter(v => v > 0);
+  return vals.length ? { avg: vals.reduce((a, b) => a + b, 0) / vals.length, count: vals.length } : { avg: null, count: 0 };
 }
 
 function Stars({ avg, count, color, size = "0.85rem" }) {
