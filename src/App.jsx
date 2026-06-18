@@ -550,9 +550,9 @@ Spirits guide covers: Whiskey, Bourbon, Scotch, Rum, Gin, Vodka, Tequila, Brandy
 When recommending drinks, reference the actual recipes. If someone asks what they can make with specific spirits, check the ingredients above. Have fun with it.`;
 
   try {
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const response = await fetch("/api/chat", {
       method: "POST",
-      headers: { "Content-Type": "application/json", "x-api-key": import.meta.env.VITE_ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01" },
+      headers: { "Content-Type":  "application/json" },
       body: JSON.stringify({
         model: "claude-sonnet-4-6",
         max_tokens: 1000,
