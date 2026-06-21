@@ -468,12 +468,199 @@ const CLASSIC_DRINKS = [
   { id: 1188, cat: "shooters", name: "Cement Mixer", ingredients: ["Bailey's", "Lime Juice"], garnish: "", source: "classic" },
 ];
 
+const DRINK_METHODS = {
+  1: { method: "Stir", directions: null },
+  2: { method: "Stir", directions: null },
+  3: { method: "Stir", directions: null },
+  4: { method: "Stir", directions: null },
+  5: { method: "Stir", directions: null },
+  6: { method: "Stir", directions: null },
+  7: { method: "Stir", directions: null },
+  8: { method: "Stir", directions: null },
+  9: { method: "Stir", directions: null },
+  10: { method: "Stir", directions: null },
+  11: { method: "Stir", directions: null },
+  12: { method: "Stir", directions: null },
+  13: { method: "Stir", directions: null },
+  14: { method: "Stir", directions: null },
+  15: { method: "Build", directions: null },
+  16: { method: "Build", directions: null },
+  17: { method: "Build", directions: null },
+  18: { method: "Build", directions: null },
+  19: { method: "Build", directions: null },
+  20: { method: "Build", directions: null },
+  21: { method: "Build", directions: null },
+  22: { method: "Build", directions: null },
+  23: { method: "Build", directions: null },
+  24: { method: "Build", directions: null },
+  25: { method: "Build", directions: null },
+  26: { method: "Build", directions: null },
+  27: { method: "Build", directions: null },
+  28: { method: "Build", directions: null },
+  29: { method: "Build", directions: null },
+  30: { method: "Build", directions: null },
+  31: { method: "Build", directions: null },
+  32: { method: "Build", directions: null },
+  33: { method: "Build", directions: null },
+  34: { method: "Build", directions: null },
+  35: { method: "Build", directions: null },
+  36: { method: "Build", directions: null },
+  37: { method: "Build", directions: "Build Southern Comfort, sloe gin, and orange juice over ice. Float Galliano on top by pouring slowly over the back of a spoon." },
+  38: { method: "Build", directions: null },
+  39: { method: "Build", directions: null },
+  40: { method: "Build", directions: null },
+  41: { method: "Build", directions: null },
+  42: { method: "Build", directions: null },
+  43: { method: "Build", directions: null },
+  44: { method: "Build", directions: null },
+  45: { method: "Build", directions: null },
+  46: { method: "Build", directions: null },
+  47: { method: "Build", directions: null },
+  48: { method: "Build", directions: null },
+  49: { method: "Build", directions: null },
+  50: { method: "Build", directions: null },
+  51: { method: "Shake", directions: null },
+  52: { method: "Build", directions: null },
+  53: { method: "Build", directions: "Build Southern Comfort, sloe gin, orange juice, and sour mix over ice. Float 151 rum on top by pouring slowly over the back of a spoon." },
+  54: { method: "Shake", directions: null },
+  55: { method: "Shake", directions: null },
+  56: { method: "Shake", directions: null },
+  57: { method: "Shake", directions: null },
+  58: { method: "Shake", directions: null },
+  59: { method: "Shake", directions: null },
+  60: { method: "Shake", directions: null },
+  61: { method: "Shake", directions: null },
+  62: { method: "Shake", directions: null },
+  63: { method: "Shake", directions: null },
+  64: { method: "Shake", directions: null },
+  65: { method: "Shake", directions: null },
+  66: { method: "Shake", directions: null },
+  67: { method: "Blend", directions: null },
+  68: { method: "Blend", directions: null },
+  69: { method: "Blend", directions: null },
+  70: { method: "Stir", directions: null },
+  71: { method: "Stir", directions: null },
+  72: { method: "Stir", directions: null },
+  73: { method: "Build", directions: null },
+  74: { method: "Shake", directions: null },
+  75: { method: "Shake", directions: null },
+  76: { method: "Build", directions: null },
+  77: { method: "Build", directions: "Muddle sugar and bitters in the glass. Add ice and bourbon, stir well, and top with soda." },
+  78: { method: "Build", directions: null },
+  79: { method: "Shake", directions: null },
+  80: { method: "Build", directions: null },
+  81: { method: "Shake", directions: null },
+  82: { method: "Stir", directions: null },
+  83: { method: "Stir", directions: null },
+  84: { method: "Build", directions: "Muddle mint leaves with sugar and a dash of water in the glass. Fill with crushed ice, add bourbon, and stir gently." },
+  85: { method: "Shake", directions: null },
+  86: { method: "Stir", directions: null },
+  87: { method: "Stir", directions: null },
+  88: { method: "Build", directions: null },
+  89: { method: "Shake", directions: null },
+  90: { method: "Stir", directions: null },
+  91: { method: "Shake", directions: null },
+  92: { method: "Shake", directions: null },
+  93: { method: "Shake", directions: null },
+  94: { method: "Shake", directions: null },
+  95: { method: "Build", directions: null },
+  96: { method: "Shake", directions: null },
+  97: { method: "Shake", directions: null },
+  98: { method: "Stir", directions: null },
+  99: { method: "Stir", directions: null },
+  100: { method: "Stir", directions: null },
+  101: { method: "Shake", directions: null },
+  102: { method: "Shake", directions: null },
+  103: { method: "Shake", directions: null },
+  104: { method: "Shake", directions: null },
+  105: { method: "Shake", directions: null },
+  106: { method: "Shake", directions: null },
+  107: { method: "Blend", directions: null },
+  108: { method: "Shake", directions: null },
+  109: { method: "Shake", directions: null },
+  110: { method: "Shake", directions: null },
+  111: { method: "Shake", directions: "Shake all ingredients except the 151 rum float with ice. Strain into glass over fresh ice. Float 151 rum on top by pouring slowly over the back of a spoon." },
+  112: { method: "Shake", directions: null },
+  113: { method: "Build", directions: null },
+  114: { method: "Build", directions: null },
+  115: { method: "Shake", directions: null },
+  116: { method: "Shake", directions: null },
+  117: { method: "Shake", directions: "Shake tequila, triple sec, lime juice, and sour mix with ice. Strain into a salt-rimmed glass. Float Grand Marnier on top by pouring slowly over the back of a spoon." },
+  118: { method: "Build", directions: "Muddle mint leaves, lime, and sugar in the glass. Add ice and rum, top with club soda, and stir." },
+  119: { method: "Shake", directions: null },
+  120: { method: "Shake", directions: null },
+  121: { method: "Build", directions: null },
+  122: { method: "Shake", directions: "Shake light rum, cr\u00e8me de banana, grenadine, and blackberry brandy with sour mix. Strain over ice. Float dark rum on top by pouring slowly over the back of a spoon." },
+  123: { method: "Shake", directions: null },
+  124: { method: "Shake", directions: null },
+  125: { method: "Shake", directions: null },
+  126: { method: "Shake", directions: null },
+  127: { method: "Shake", directions: null },
+  128: { method: "Shake", directions: null },
+  129: { method: "Shake", directions: null },
+  130: { method: "Shake", directions: null },
+  131: { method: "Shake", directions: null },
+  132: { method: "Shake", directions: null },
+  133: { method: "Shake", directions: null },
+  134: { method: "Shake", directions: null },
+  135: { method: "Shake", directions: null },
+  136: { method: "Shake", directions: null },
+  137: { method: "Shake", directions: null },
+  138: { method: "Build", directions: "Add Frangelico, Bailey's, and Kahlua to a warm mug. Top with hot coffee, stir, and finish with whipped cream." },
+  139: { method: "Build", directions: "Add butterscotch schnapps to a warm mug. Top with hot coffee and finish with whipped cream." },
+  140: { method: "Build", directions: "Add amaretto and cr\u00e8me de cacao to a warm mug. Top with hot coffee and finish with whipped cream." },
+  141: { method: "Build", directions: "Add Kahlua, Bailey's, and Frangelico to a warm mug. Top with hot coffee and finish with whipped cream." },
+  142: { method: "Build", directions: "Add Grand Marnier, Kahlua, and Bailey's to a warm mug. Top with hot coffee and finish with whipped cream." },
+  143: { method: "Build", directions: "Add Bailey's and Frangelico to a warm mug. Top with hot coffee and finish with whipped cream." },
+  144: { method: "Build", directions: "Add honey and bourbon (or scotch) to a mug. Pour boiling water over, stir well, and garnish with a cinnamon stick." },
+  145: { method: "Build", directions: null },
+  146: { method: "Build", directions: null },
+  147: { method: "Build", directions: null },
+  148: { method: "Build", directions: null },
+  149: { method: "Build", directions: null },
+  150: { method: "Build", directions: null },
+  151: { method: "Build", directions: "Place a sugar cube in the glass, add a dash of bitters, and fill with champagne." },
+  152: { method: "Build", directions: null },
+  153: { method: "Shake", directions: "Shake gin, sour mix, and lemon juice with ice. Strain into a flute and top with champagne." },
+  154: { method: "Shake", directions: null },
+  155: { method: "Shake", directions: null },
+  156: { method: "Shake", directions: null },
+  157: { method: "Build", directions: null },
+  158: { method: "Layer", directions: "Pour strawberry schnapps into the glass. Slowly drop Bailey's in drop by drop so it curdles into 'brain' strands rather than mixing." },
+  159: { method: "Shake", directions: null },
+  160: { method: "Build", directions: "Dissolve cherry Jell-O in boiling water, stir in vodka, and chill until set." },
+  161: { method: "Shake", directions: null },
+  162: { method: "Shake", directions: null },
+  163: { method: "Shake", directions: null },
+  164: { method: "Shake", directions: null },
+  165: { method: "Shake", directions: null },
+  166: { method: "Layer", directions: "Layer carefully in order: Kahlua first, then Bailey's, then peppermint schnapps on top, pouring each slowly over the back of a spoon." },
+  167: { method: "Shake", directions: null },
+  168: { method: "Build", directions: null },
+  169: { method: "Build", directions: null },
+  170: { method: "Shake", directions: null },
+  171: { method: "Layer", directions: "Layer carefully in order: Kahlua first, then Bailey's, then Grand Marnier on top, pouring each slowly over the back of a spoon to keep the layers distinct." },
+  172: { method: "Layer", directions: "Layer carefully in order: Kahlua first, then Bailey's, then 151 rum on top, pouring each slowly over the back of a spoon to keep the layers distinct." },
+  173: { method: "Layer", directions: "Layer in reverse order: vodka first (bottom), then Bailey's, then Kahlua on top, pouring each slowly over the back of a spoon so the layers stay separate." },
+  174: { method: "Build", directions: null },
+  175: { method: "Layer", directions: "Layer amaretto and Chambord, then float 151 rum on top and carefully ignite. Extinguish before drinking and serve with a half glass of beer as a chaser." },
+  176: { method: "Shake", directions: null },
+  177: { method: "Shake", directions: null },
+  178: { method: "Build", directions: null },
+  179: { method: "Build", directions: null },
+  180: { method: "Build", directions: null },
+  181: { method: "Build", directions: null },
+  182: { method: "Shake", directions: null },
+  183: { method: "Shake", directions: null },
+};
+
 const CAT_COLORS = {
   martinis:"#7B68C8", one_liquor:"#C8821A", sours:"#A8A020", frozen:"#4A9CC8",
   two_liquor:"#A0522D", tropics:"#2E8B57", dessert:"#C84B8A",
   coffee:"#6B4226", wine:"#8B1A4A", shooters:"#C84040", community:"#4A8B8B",
 };
 const cc = (cat) => CAT_COLORS[cat] || "#C8821A";
+const getMethod = (id) => DRINK_METHODS[id] || { method: "Build", directions: null };
 const catLabel = (cat) => BOOK_CATEGORIES.find(c => c.id === cat)?.label || (cat === "community" ? "Community" : cat);
 
 // ─── STORAGE HELPERS ───────────────────────────────────────────────────────
@@ -655,6 +842,7 @@ export default function App() {
   const [activeCat, setActiveCat] = useState("martinis");
   const [communityTab, setCommunityTab] = useState("browse");
   const [selectedDrink, setSelectedDrink] = useState(null);
+  const [bartenderView, setBartenderView] = useState(null); // { drink, list } for fullscreen bar card swipe view
   const [search, setSearch] = useState("");
   const [activeSpirit, setActiveSpirit] = useState(null);
   const [showPremium, setShowPremium] = useState(false);
@@ -1220,10 +1408,10 @@ When recommending drinks, reference the actual recipes. If someone asks what the
             <div key={cat.id} style={{ marginBottom:18 }}>
               <div style={{ fontSize:"0.65rem", color:cc(cat.id), textTransform:"uppercase", letterSpacing:"2px", marginBottom:6, display:"flex", alignItems:"center", gap:5 }}>{cat.emoji} {cat.label}</div>
               <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))", gap:6 }}>
-                {BOOK_DRINKS.filter(d=>d.cat===cat.id).map(d=>{
+                {(() => { const catDrinks = allDrinks.filter(d=>d.cat===cat.id); return catDrinks.map(d=>{
                   const {avg,count}=getDR(d.id);
                   return (
-                    <div key={d.id} style={{ background:"#111008", border:`1px solid ${cc(d.cat)}28`, borderRadius:7, padding:"9px 10px", position:"relative", overflow:"hidden" }}>
+                    <div key={d.id} onClick={()=>setBartenderView({ drink: d, list: catDrinks })} style={{ background:"#111008", border:`1px solid ${cc(d.cat)}28`, borderRadius:7, padding:"9px 10px", position:"relative", overflow:"hidden", cursor:"pointer" }}>
                       <div style={{ position:"absolute", top:0, left:0, width:3, height:"100%", background:cc(d.cat) }} />
                       <div style={{ paddingLeft:8 }}>
                         <div style={{ fontStyle:"italic", color:"#E8DCC8", fontSize:"0.81rem", marginBottom:3 }}>{d.name}</div>
@@ -1233,7 +1421,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
                       </div>
                     </div>
                   );
-                })}
+                }); })()}
               </div>
             </div>
           ))}
@@ -1421,6 +1609,56 @@ When recommending drinks, reference the actual recipes. If someone asks what the
         );
       })()}
 
+{/* FULLSCREEN BARTENDER VIEW */}
+{bartenderView && (() => {
+  const { drink, list } = bartenderView;
+  const idx = list.findIndex(d => d.id === drink.id);
+  const goTo = (newIdx) => {
+    if (newIdx < 0 || newIdx >= list.length) return;
+    setBartenderView({ drink: list[newIdx], list });
+  };
+  let touchStartX = 0;
+  return (
+    <div
+      style={{ position:"fixed", inset:0, background:"#0A0806", zIndex:400, display:"flex", flexDirection:"column", padding:"24px 22px" }}
+      onTouchStart={e => { touchStartX = e.touches[0].clientX; }}
+      onTouchEnd={e => {
+        const dx = e.changedTouches[0].clientX - touchStartX;
+        if (dx > 60) goTo(idx - 1);
+        else if (dx < -60) goTo(idx + 1);
+      }}
+    >
+      <button onClick={()=>setBartenderView(null)} style={{ alignSelf:"flex-end", background:"#1A1510", border:"none", color:"#C8A97E", width:38, height:38, borderRadius:"50%", cursor:"pointer", fontSize:"1.1rem", marginBottom:14 }}>✕</button>
+      <div style={{ flex:1, overflowY:"auto" }}>
+        <div style={{ height:4, background:cc(drink.cat), borderRadius:2, marginBottom:18 }} />
+        <div style={S.badge(cc(drink.cat))}>{catLabel(drink.cat)}</div>
+        <h1 style={{ fontSize:"2.1rem", fontStyle:"italic", color:"#E8DCC8", margin:"10px 0 6px", lineHeight:1.15 }}>{drink.name}</h1>
+        <div style={{ fontSize:"0.95rem", color:cc(drink.cat), marginBottom:18, textTransform:"uppercase", letterSpacing:"1px" }}>{getMethod(drink.id).method}</div>
+        {drink.ingredients.map((ing, i) => (
+          <div key={i} style={{ fontSize:"1.35rem", color:"#E8DCC8", padding:"12px 0", borderBottom:"1px solid #1A1510", lineHeight:1.4 }}>
+            {ing}
+          </div>
+        ))}
+        {getMethod(drink.id).directions && (
+  <div style={{ marginTop:18, padding:"14px 16px", background:cc(drink.cat)+"15", border:`1px solid ${cc(drink.cat)}40`, borderRadius:10, fontSize:"1.05rem", color:"#C8A97E", lineHeight:1.6 }}>
+    <span style={{ color:cc(drink.cat), fontWeight:"bold" }}>Directions: </span>{getMethod(drink.id).directions}
+  </div>
+)}
+{drink.garnish && (
+  <div style={{ marginTop:14, padding:"14px 16px", background:"#1A1510", borderRadius:10, fontSize:"1.15rem", color:"#C8A97E", fontStyle:"italic" }}>
+    <span style={{ color:cc(drink.cat) }}>Garnish: </span>{drink.garnish}
+  </div>
+)}
+      </div>
+      <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginTop:18, paddingTop:14, borderTop:"1px solid #1A1510" }}>
+        <button onClick={()=>goTo(idx-1)} disabled={idx<=0} style={{ background:"none", border:"none", color:idx<=0?"#2A2010":"#C8A97E", fontSize:"1.6rem", cursor:idx<=0?"default":"pointer", padding:"6px 16px" }}>←</button>
+        <span style={{ fontSize:"0.7rem", color:"#5A4030" }}>{idx+1} of {list.length} · swipe to browse</span>
+        <button onClick={()=>goTo(idx+1)} disabled={idx>=list.length-1} style={{ background:"none", border:"none", color:idx>=list.length-1?"#2A2010":"#C8A97E", fontSize:"1.6rem", cursor:idx>=list.length-1?"default":"pointer", padding:"6px 16px" }}>→</button>
+      </div>
+    </div>
+  );
+})()}
+      
       {/* AI CHAT */}
 <div style={{ position:"fixed", bottom:20, right:20, zIndex:300 }}>
   {chatOpen && (
