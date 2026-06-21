@@ -1594,7 +1594,11 @@ When recommending drinks, reference the actual recipes. If someone asks what the
               <div style={{ display:"flex", gap:6, marginTop:13 }}>
                 <button style={S.aBtn(cc(selectedDrink.cat))} onClick={()=>toggleSaved(selectedDrink.id)}>{mySaved[selectedDrink.id]?"✓ Saved":"+ Save"}</button>
                 {isPremium&&selectedDrink.cat!=="community"&&<button style={S.aBtn(PREMIUM_COLOR)} onClick={()=>{setJDrink(selectedDrink);setSelectedDrink(null);setTab("journal");}}>📓 Log it</button>}
-                {selectedDrink.cat!=="community"&&<button style={S.aBtn("#C8A97E")} onClick={()=>{setTab("barcard");setSelectedDrink(null);}}>Bartender →</button>}
+                {selectedDrink.cat!=="community"&&<button style={S.aBtn("#C8A97E")} onClick={()=>{
+  const catList = allDrinks.filter(d=>d.cat===selectedDrink.cat);
+  setBartenderView({ drink: selectedDrink, list: catList });
+  setSelectedDrink(null);
+}}>Bartender →</button>}
               </div>
               {!isPremium&&selectedDrink.cat!=="community"&&(
                 <div onClick={()=>{setSelectedDrink(null);setShowPremium(true);}} style={{ marginTop:9, padding:"7px 11px", background:PREMIUM_COLOR+"10", border:`1px solid ${PREMIUM_COLOR}30`, borderRadius:7, fontSize:"0.68rem", color:PREMIUM_COLOR, cursor:"pointer", textAlign:"center" }}>
