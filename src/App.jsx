@@ -1384,7 +1384,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
               <div style={{ position:"absolute", top:0, left:0, right:0, height:3, background:`linear-gradient(90deg,${cc(selectedDrink.cat)},transparent)`, borderRadius:"14px 14px 0 0" }} />
               <button style={S.closeBtn} onClick={()=>setSelectedDrink(null)}>✕</button>
               <div style={S.badge(cc(selectedDrink.cat))}>{catLabel(selectedDrink.cat)}</div>
-              {selectedDrink.source==="classic"&&<div style={{ fontSize:"0.61rem", color:"#5A4030", marginTop:3 }}>Classic Cocktail</div>}
+              {selectedDrink.source==="classic"&&<div style={{ display:"inline-block", fontSize:"0.63rem", color:"#7A9CC8", background:"#4A8CC820", border:"1px solid #4A8CC840", borderRadius:10, padding:"2px 9px", marginTop:4 }}>Classic Cocktail</div>}
               <h2 style={{ fontSize:"1.3rem", fontStyle:"italic", color:"#E8DCC8", margin:"7px 0 5px" }}>{selectedDrink.name}</h2>
               {selectedDrink.spirit&&<div style={{ fontSize:"0.69rem", color:cc(selectedDrink.cat), marginBottom:6 }}>{selectedDrink.spirit}</div>}
               <div style={{ marginBottom:4 }}><Stars avg={avg} count={count} color={cc(selectedDrink.cat)} /></div>
