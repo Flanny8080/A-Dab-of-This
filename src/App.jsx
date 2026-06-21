@@ -1046,7 +1046,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
               Written in Mirmandab, Afghanistan during a 9-month tour with the 82nd Airborne and Special Operations — drawing on bartending school in Fayetteville, NC, memories from Whistler, BC, and recipes swapped with soldiers on the left and right.
             </p>
             <div style={{ display:"flex", justifyContent:"center", gap:22 }}>
-              {[["183","Book Recipes"],["10","Chapters"],["8","Spirits"],[communityDrinks.length||"0","Community"]].map(([n,l])=>(
+              {[[BOOK_DRINKS.length + CLASSIC_DRINKS.length,"Total Recipes"],["10","Chapters"],["8","Spirits"],[communityDrinks.length||"0","Community"]].map(([n,l])=>(
                 <div key={l} style={{ textAlign:"center" }}>
                   <div style={{ fontSize:"1.55rem", fontStyle:"italic", background:"linear-gradient(135deg,#F0A500,#C8821A)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent" }}>{n}</div>
                   <div style={{ fontSize:"0.56rem", color:"#5A4030", textTransform:"uppercase", letterSpacing:"1.5px" }}>{l}</div>
@@ -1080,7 +1080,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
                   onMouseLeave={e=>e.currentTarget.style.borderColor=cc(cat.id)+"35"}>
                   <div style={{ fontSize:"1.45rem", marginBottom:4 }}>{cat.emoji}</div>
                   <div style={{ fontSize:"0.76rem", fontStyle:"italic", color:"#E8DCC8" }}>{cat.label}</div>
-                  <div style={{ fontSize:"0.59rem", color:cc(cat.id), marginTop:2 }}>{BOOK_DRINKS.filter(d=>d.cat===cat.id).length} drinks</div>
+                  <div style={{ fontSize:"0.59rem", color:cc(cat.id), marginTop:2 }}>{allDrinks.filter(d=>d.cat===cat.id && d.cat !== "community").length} drinks</div>
                 </div>
               ))}
             </div>
@@ -1101,8 +1101,8 @@ When recommending drinks, reference the actual recipes. If someone asks what the
               ))}
             </div>
           )}
-          <div style={S.sttl}>{search?`"${search}" — ${searchResults.length} found`:`${catLabel(activeCat)} — ${BOOK_DRINKS.filter(d=>d.cat===activeCat).length} drinks`}</div>
-          <div style={S.grid}>{(search?searchResults:BOOK_DRINKS.filter(d=>d.cat===activeCat)).map(d=><DrinkCard key={d.id} d={d} showCat={!!search} />)}</div>
+          <div style={S.sttl}>{search?`"${search}" — ${searchResults.length} found`:`${catLabel(activeCat)} — ${allDrinks.filter(d=>d.cat===activeCat).length} drinks`}</div>
+          <div style={S.grid}>{(search?searchResults:allDrinks.filter(d=>d.cat===activeCat)).map(d=><DrinkCard key={d.id} d={d} showCat={!!search} />)}</div>
         </div>
       )}
 
