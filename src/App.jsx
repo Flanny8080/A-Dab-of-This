@@ -902,7 +902,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
         onMouseLeave={e => e.currentTarget.style.borderColor = cc(d.cat) + "30"}>
         <div style={S.cardTop(d.cat)} />
         {showCat && <div style={{ ...S.badge(cc(d.cat)), marginBottom:5 }}>{catLabel(d.cat)}</div>}
-{d.source === "classic" && <div style={{ fontSize:"0.56rem", color:"#5A4030", marginBottom:3 }}>Classic Cocktail</div>}
+{d.source === "classic" && <div style={{ display:"inline-block", fontSize:"0.58rem", color:"#7A9CC8", background:"#4A8CC820", border:"1px solid #4A8CC840", borderRadius:10, padding:"1px 7px", marginBottom:5 }}>Classic Cocktail</div>}
         {d.submittedBy && <div style={{ fontSize:"0.59rem", color:"#5A4030", marginBottom:3 }}>by {d.submittedBy}</div>}
         <div style={{ fontSize:"0.89rem", fontStyle:"italic", color:"#E8DCC8", marginBottom:3 }}>{d.name}</div>
         {d.spirit && <div style={{ fontSize:"0.64rem", color:cc(d.cat), marginBottom:3 }}>{d.spirit}</div>}
