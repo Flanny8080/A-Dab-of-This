@@ -843,6 +843,7 @@ export default function App() {
   const [communityTab, setCommunityTab] = useState("browse");
   const [selectedDrink, setSelectedDrink] = useState(null);
   const [bartenderView, setBartenderView] = useState(null); // { drink, list } for fullscreen bar card swipe view
+  const [barCardSearch, setBarCardSearch] = useState("");
   const [search, setSearch] = useState("");
   const [activeSpirit, setActiveSpirit] = useState(null);
   const [showPremium, setShowPremium] = useState(false);
@@ -1403,12 +1404,24 @@ When recommending drinks, reference the actual recipes. If someone asks what the
       {tab==="barcard" && (
         <div style={S.sec}>
           <div style={{ fontSize:"1.3rem", fontStyle:"italic", background:"linear-gradient(135deg,#F0A500,#C8821A)", WebkitBackgroundClip:"text", WebkitTextFillColor:"transparent", marginBottom:3 }}>Bar Card</div>
-          <p style={{ color:"#5A4030", fontSize:"0.72rem", marginBottom:16 }}>Show this to your bartender. Every recipe, exactly as written.</p>
-          {BOOK_CATEGORIES.map(cat=>(
-            <div key={cat.id} style={{ marginBottom:18 }}>
-              <div style={{ fontSize:"0.65rem", color:cc(cat.id), textTransform:"uppercase", letterSpacing:"2px", marginBottom:6, display:"flex", alignItems:"center", gap:5 }}>{cat.emoji} {cat.label}</div>
-              <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))", gap:6 }}>
-                {(() => { const catDrinks = allDrinks.filter(d=>d.cat===cat.id); return catDrinks.map(d=>{
+          <p style={{ color:"#5A4030", fontSize:"0.72rem", marginBottom:12 }}>Show this to your bartender. Every recipe, exactly as written.</p>
+<input
+  style={{...S.input,marginBottom:16}}
+  placeholder="Search for a drink..."
+  value={barCardSearch}
+  onChange={e=>setBarCardSearch(e.target.value)}
+/>
+          {BOOK_CATEGORIES.map(cat=>{
+  const catDrinksAll = allDrinks.filter(d=>d.cat===cat.id);
+  const catDrinksFiltered = barCardSearch.trim()
+    ? catDrinksAll.filter(d=>d.name.toLowerCase().includes(barCardSearch.toLowerCase()))
+    : catDrinksAll;
+  if (barCardSearch.trim() && catDrinksFiltered.length === 0) return null;
+  return (
+  <div key={cat.id} style={{ marginBottom:18 }}>
+    <div style={{ fontSize:"0.65rem", color:cc(cat.id), textTransform:"uppercase", letterSpacing:"2px", marginBottom:6, display:"flex", alignItems:"center", gap:5 }}>{cat.emoji} {cat.label}</div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill,minmax(190px,1fr))", gap:6 }}>
+      {(() => { const catDrinks = catDrinksFiltered; return catDrinks.map(d=>{
                   const {avg,count}=getDR(d.id);
                   return (
                     <div key={d.id} onClick={()=>setBartenderView({ drink: d, list: catDrinks })} style={{ background:"#111008", border:`1px solid ${cc(d.cat)}28`, borderRadius:7, padding:"9px 10px", position:"relative", overflow:"hidden", cursor:"pointer" }}>
@@ -1424,7 +1437,8 @@ When recommending drinks, reference the actual recipes. If someone asks what the
                 }); })()}
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
       )}
 
