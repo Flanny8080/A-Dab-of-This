@@ -654,6 +654,45 @@ const DRINK_METHODS = {
   183: { method: "Shake", directions: null },
 };
 
+const DRINK_CALENDAR = {
+  "01-01": { holiday: "National Bloody Mary Day", drinkName: "Bloody Mary", blurb: "The ultimate hangover cure and brunch staple, built on the bold pairing of vodka and tomato juice." },
+  "01-11": { holiday: "National Hot Toddy Day", drinkName: "Hot Toddy", blurb: "A warm whiskey classic that's been soothing colds (and bad days) for centuries." },
+  "02-22": { holiday: "National Margarita Day", drinkName: "Margarita", blurb: "America's most popular tequila cocktail gets its own day \u2014 salt rim optional, but recommended." },
+  "02-27": { holiday: "National Kahlua Day", drinkName: "Black Russian", blurb: "A coffee liqueur so good it gets its own holiday \u2014 shown here at its smoothest." },
+  "03-03": { holiday: "International Irish Whiskey Day", drinkName: "Hot Tamale", blurb: "A nod to Irish whiskey's warming, honeyed character." },
+  "03-21": { holiday: "World Vermouth Day", drinkName: "Manhattan", blurb: "Vermouth is the unsung hero behind some of the world's most iconic cocktails." },
+  "03-24": { holiday: "National Cocktail Day", drinkName: "Old Fashion", blurb: "A celebration of the cocktail itself \u2014 and there's no better place to start than where it all began." },
+  "03-27": { holiday: "International Whisk(e)y Day", drinkName: "Whiskey Sour", blurb: "Honoring the spirit that built entire chapters of this book." },
+  "04-07": { holiday: "National Beer Day", drinkName: "Black and Tan", blurb: "Prohibition's end in 1933 gets celebrated with a classic beer-forward pour." },
+  "04-09": { holiday: "National Gin & Tonic Day", drinkName: "Gin & Tonic", blurb: "Two ingredients, endless refreshment \u2014 the easiest classic in the book." },
+  "05-13": { holiday: "World Cocktail Day", drinkName: "Sazerac", blurb: "Marking the day the word 'cocktail' first appeared in print \u2014 celebrated with one of the oldest cocktails on record." },
+  "05-25": { holiday: "National Wine Day", drinkName: "Sangria", blurb: "A day to celebrate wine in all its forms, including the ones mixed into a pitcher." },
+  "05-30": { holiday: "National Mint Julep Day", drinkName: "Mint Julep", blurb: "The official drink of the Kentucky Derby, built on muddled mint and bourbon." },
+  "06-04": { holiday: "National Cognac Day", drinkName: "Sidecar", blurb: "Cognac's elegance shines in this classic French sour." },
+  "06-14": { holiday: "National Bourbon Day", drinkName: "Manhattan", blurb: "America's native spirit deserves a toast \u2014 Whiskey B. all the way." },
+  "06-19": { holiday: "National Martini Day", drinkName: "Martini", blurb: "Shaken or stirred, dry or dirty \u2014 June 19th is all about the original mixed drink." },
+  "06-26": { holiday: "Tropical Cocktails Day", drinkName: "Mai Tai", blurb: "An excuse to bring a little island escape into any backyard." },
+  "07-02": { holiday: "National Anisette Day", drinkName: "Sambuca", blurb: "A licorice-forward liqueur that shows up across the shooters chapter." },
+  "07-10": { holiday: "National Pina Colada Day", drinkName: "Pina Colada", blurb: "Rum, pineapple, and coconut cream \u2014 the official taste of vacation." },
+  "07-11": { holiday: "National Mojito Day", drinkName: "Mojito", blurb: "Mint, lime, rum, and soda \u2014 Cuba's gift to summer." },
+  "07-14": { holiday: "National Grand Marnier Day", drinkName: "Top Shelf / Cadillac Margarita", blurb: "Grand Marnier's orange-cognac blend turns a good margarita into a great one." },
+  "07-19": { holiday: "National Daiquiri Day", drinkName: "Daiquiri", blurb: "Before the blenders and the flavors, it was just rum, lime, and sugar \u2014 and it's still the best version." },
+  "07-24": { holiday: "National Tequila Day", drinkName: "Tequila Sunrise", blurb: "A day built entirely around agave, sunshine, and a salted rim." },
+  "07-27": { holiday: "National Scotch Day", drinkName: "Rob Roy", blurb: "Marking the day Scotland's whiskies were first taxed \u2014 fittingly, with Scotland's signature Manhattan." },
+  "08-08": { holiday: "National Frozen Custard Day", drinkName: "Brandy Alexander", blurb: "Creamy, dessert-like, and the closest thing to drinking custard." },
+  "08-30": { holiday: "World Mai Tai Day", drinkName: "Mai Tai", blurb: "Trader Vic's tiki classic gets a worldwide toast." },
+  "09-04": { holiday: "National Vodka Day", drinkName: "Vodka Martini", blurb: "The world's most versatile spirit, served at its cleanest." },
+  "10-04": { holiday: "National Vodka Day", drinkName: "Cosmopolitan", blurb: "A second nod to vodka's versatility, by way of a 90s icon." },
+  "10-08": { holiday: "National Harvey Wallbanger Day", drinkName: "Harvey Wallbanger", blurb: "Vodka, Galliano, and orange juice \u2014 a drink as fun to make as it is to say." },
+  "10-16": { holiday: "National Liqueur Day", drinkName: "Grasshopper", blurb: "A celebration of the bottles that turn good cocktails into great ones." },
+  "11-14": { holiday: "National Champagne Day", drinkName: "French 75", blurb: "Bubbles deserve more than just a toast \u2014 this gin-and-champagne classic earns the spotlight." },
+  "11-23": { holiday: "National Espresso Day", drinkName: "Espresso Martini", blurb: "Coffee and vodka collide in one of the most requested drinks at any bar." },
+  "12-05": { holiday: "Repeal Day", drinkName: "Old Fashion", blurb: "Marking the end of Prohibition in 1933 \u2014 celebrated properly, with a true original." },
+  "12-14": { holiday: "National Screwdriver Day", drinkName: "Screwdriver", blurb: "Vodka and orange juice \u2014 proof that simple is sometimes best." },
+  "12-20": { holiday: "National Sangria Day", drinkName: "Sangria", blurb: "A fruity, wine-based classic to close out the year." },
+  "12-31": { holiday: "New Year's Eve", drinkName: "Champagne Cocktail", blurb: "A sugar cube, a dash of bitters, and a flute of champagne \u2014 the perfect way to ring in the new year." },
+};
+
 const CAT_COLORS = {
   martinis:"#7B68C8", one_liquor:"#C8821A", sours:"#A8A020", frozen:"#4A9CC8",
   two_liquor:"#A0522D", tropics:"#2E8B57", dessert:"#C84B8A",
@@ -844,6 +883,27 @@ export default function App() {
   const [selectedDrink, setSelectedDrink] = useState(null);
   const [bartenderView, setBartenderView] = useState(null); // { drink, list } for fullscreen bar card swipe view
   const [barCardSearch, setBarCardSearch] = useState("");
+  const [surpriseDrink, setSurpriseDrink] = useState(null);
+
+function getTodaysDrink() {
+  const today = new Date();
+  const key = `${String(today.getMonth()+1).padStart(2,"0")}-${String(today.getDate()).padStart(2,"0")}`;
+  const entry = DRINK_CALENDAR[key];
+  if (entry) {
+    const drink = allDrinks.find(d => d.name.toLowerCase() === entry.drinkName.toLowerCase());
+    if (drink) return { drink, holiday: entry.holiday, blurb: entry.blurb };
+  }
+  // Fallback: deterministic "random" pick based on day of year, so it's stable all day
+  const dayOfYear = Math.floor((today - new Date(today.getFullYear(),0,0)) / 86400000);
+  const pick = BOOK_DRINKS[dayOfYear % BOOK_DRINKS.length];
+  return { drink: pick, holiday: null, blurb: null };
+}
+
+function surpriseMe() {
+  const pool = allDrinks.filter(d => d.cat !== "community");
+  const pick = pool[Math.floor(Math.random() * pool.length)];
+  setSurpriseDrink(pick);
+}
   const [search, setSearch] = useState("");
   const [activeSpirit, setActiveSpirit] = useState(null);
   const [showPremium, setShowPremium] = useState(false);
@@ -1254,6 +1314,29 @@ When recommending drinks, reference the actual recipes. If someone asks what the
               </div>
             </div>
           )}
+
+{(() => {
+  const { drink, holiday, blurb } = getTodaysDrink();
+  return (
+    <div style={S.sec}>
+      <div style={S.sttl}>{holiday ? `🎉 ${holiday}` : "✨ Drink of the Day"}</div>
+      <div style={{ background:"#111008", border:`1px solid ${cc(drink.cat)}40`, borderRadius:12, padding:16, display:"flex", gap:14, alignItems:"center", cursor:"pointer" }} onClick={()=>setSelectedDrink(drink)}>
+        <div style={{ flex:1 }}>
+          <div style={{ fontSize:"1.05rem", fontStyle:"italic", color:"#E8DCC8", marginBottom:4 }}>{drink.name}</div>
+          {blurb && <div style={{ fontSize:"0.72rem", color:"#8A7A64", lineHeight:1.5, marginBottom:6 }}>{blurb}</div>}
+          <div style={{ fontSize:"0.62rem", color:cc(drink.cat) }}>{catLabel(drink.cat)} · Tap to see recipe →</div>
+        </div>
+      </div>
+    </div>
+  );
+})()}
+
+<div style={{ padding:"0 20px 6px" }}>
+  <button onClick={surpriseMe} style={{ width:"100%", padding:11, background:"linear-gradient(135deg,#7B68C8,#A088E8)", border:"none", borderRadius:8, color:"#0A0806", fontSize:"0.85rem", fontFamily:"Georgia,serif", fontStyle:"italic", fontWeight:"bold", cursor:"pointer" }}>
+    🎲 Surprise Me
+  </button>
+</div>
+          
           {topRated.length>0 && (
             <div style={S.sec}>
               <div style={S.sttl}>⭐ Top Rated by the Community</div>
@@ -1281,6 +1364,9 @@ When recommending drinks, reference the actual recipes. If someone asks what the
       {tab==="browse" && (
         <div style={S.sec}>
           <input style={{...S.input,marginBottom:10}} placeholder="Search all drinks..." value={search} onChange={e=>setSearch(e.target.value)} />
+          <button onClick={surpriseMe} style={{ width:"100%", padding:9, marginBottom:10, background:"linear-gradient(135deg,#7B68C8,#A088E8)", border:"none", borderRadius:8, color:"#0A0806", fontSize:"0.8rem", fontFamily:"Georgia,serif", fontStyle:"italic", fontWeight:"bold", cursor:"pointer" }}>
+  🎲 Surprise Me
+</button>
           {!search && (
             <div style={{ display:"flex", gap:5, overflowX:"auto", paddingBottom:8, marginBottom:10 }}>
               {BOOK_CATEGORIES.map(cat=>(
@@ -1676,6 +1762,25 @@ When recommending drinks, reference the actual recipes. If someone asks what the
     </div>
   );
 })()}
+
+</div>
+    );
+  })()}
+
+  {surpriseDrink && (
+    <div style={S.overlay} onClick={()=>setSurpriseDrink(null)}>
+      <div style={{...S.modal,maxWidth:380,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
+        <button style={S.closeBtn} onClick={()=>setSurpriseDrink(null)}>✕</button>
+        <div style={{ fontSize:"2rem", marginBottom:8 }}>🎲</div>
+        <div style={{ fontSize:"0.7rem", color:"#5A4030", textTransform:"uppercase", letterSpacing:"2px", marginBottom:10 }}>Your Surprise Drink</div>
+        <h2 style={{ fontSize:"1.4rem", fontStyle:"italic", color:"#E8DCC8", marginBottom:14 }}>{surpriseDrink.name}</h2>
+        <div style={{ display:"flex", gap:8, justifyContent:"center" }}>
+          <button style={S.aBtn(cc(surpriseDrink.cat))} onClick={()=>{setSelectedDrink(surpriseDrink);setSurpriseDrink(null);}}>See Recipe →</button>
+          <button style={S.aBtn("#7B68C8")} onClick={surpriseMe}>🎲 Again</button>
+        </div>
+      </div>
+    </div>
+  )}      
       
       {/* AI CHAT */}
 <div style={{ position:"fixed", bottom:20, right:20, zIndex:300 }}>
