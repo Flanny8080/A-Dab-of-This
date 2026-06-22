@@ -1763,10 +1763,6 @@ When recommending drinks, reference the actual recipes. If someone asks what the
   );
 })()}
 
-</div>
-    );
-  })()}
-
   {surpriseDrink && (
     <div style={S.overlay} onClick={()=>setSurpriseDrink(null)}>
       <div style={{...S.modal,maxWidth:380,textAlign:"center"}} onClick={e=>e.stopPropagation()}>
