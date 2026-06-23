@@ -1275,16 +1275,25 @@ When recommending drinks, reference the actual recipes. If someone asks what the
                 </div>
               </div>
             ))}
-            <button onClick={()=>{
-              // Production: trigger Google Play Billing via Capacitor
-              // import { InAppPurchase2 } from '@ionic-native/in-app-purchase-2';
-              // For now: simulate unlock
-              if(!user){setShowPremium(false);setShowAuth(true);return;}
-              setUser(u=>({...u,is_premium:true}));
-              setShowPremium(false);
-            }} style={{ width:"100%", marginTop:16, padding:12, background:`linear-gradient(135deg,${PREMIUM_COLOR},#E8C840)`, border:"none", borderRadius:8, color:"#0A0806", fontSize:"0.9rem", fontFamily:"Georgia,serif", fontStyle:"italic", fontWeight:"bold", cursor:"pointer" }}>
-              Unlock for $2.99 →
-            </button>
+           <button onClick={async ()=>{
+  // Production: trigger Google Play Billing via Capacitor
+  // import { InAppPurchase2 } from '@ionic-native/in-app-purchase-2';
+  if(!user){setShowPremium(false);setShowAuth(true);return;}
+  setUser(u=>({...u,is_premium:true}));
+  setShowPremium(false);
+  // Persist premium status to Supabase so it survives logout/login
+  if (SUPABASE_URL !== "YOUR_SUPABASE_URL") {
+    try {
+      await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, Prefer: "return=minimal" },
+        body: JSON.stringify({ is_premium: true }),
+      });
+    } catch {}
+  }
+}} style={{ width:"100%", marginTop:16, padding:12, background:`linear-gradient(135deg,${PREMIUM_COLOR},#E8C840)`, border:"none", borderRadius:8, color:"#0A0806", fontSize:"0.9rem", fontFamily:"Georgia,serif", fontStyle:"italic", fontWeight:"bold", cursor:"pointer" }}>
+  Unlock for $2.99 →
+</button>
             <p style={{ textAlign:"center", fontSize:"0.6rem", color:"#3A2E20", marginTop:9 }}>Supports Andrew and helps keep the app free for everyone.</p>
           </div>
         </div>
