@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { StatusBar, Style } from '@capacitor/status-bar';
+
 
 // ─── SPIRITS EDUCATION DATA ────────────────────────────────────────────────
 const SPIRITS_GUIDE = [
@@ -913,6 +915,11 @@ function surpriseMe() {
   const [communityDrinks, setCommunityDrinks] = useState([]);
   const [storageReady, setStorageReady] = useState(false);
 
+useEffect(() => {
+  StatusBar.setBackgroundColor({ color: '#0A0806' }).catch(() => {});
+  StatusBar.setStyle({ style: Style.Dark }).catch(() => {});
+}, []);
+  
   useEffect(() => {
     async function load() {
       try {
