@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">A Dab of This, A Dab of That</string>
+    <string name="title_activity_main">A Dab of This, A Dab of That</string>
+    <string name="package_name">com.flannigan.adabofthis</string>
+    <string name="custom_url_scheme">com.flannigan.adabofthis</string>
+</resources>
