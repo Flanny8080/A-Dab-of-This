@@ -809,6 +809,9 @@ const _sb = {
   async signIn(email, password) {
     try { const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: this._h(), body: JSON.stringify({ email, password }) }); const d = await r.json(); return r.ok ? { user: d.user, error: null } : { user: null, error: d.error_description || d.msg }; } catch { return { user: null, error: "network" }; }
   },
+  async delete(table, q = "") {
+  try { const r = await fetch(`${this._url(table)}${q}`, { method: "DELETE", headers: this._h() }); return r.ok ? { error: null } : { error: "delete error" }; } catch { return { error: "network" }; }
+  },
 };
 
 const PREMIUM_COLOR = "#C8A020";
@@ -869,12 +872,36 @@ export default function App() {
       await _sb.insert("profiles", { id: u.id, username: authUser.trim() });
       setUser({ id: u.id, email: authEmail, username: authUser.trim(), is_premium: false });
     } else {
-      const { user: u, error } = await _sb.signIn(authEmail, authPass);
-      if (error) { setAuthErr(error); setAuthBusy(false); return; }
-      const { data } = await _sb.select("profiles", `?id=eq.${u.id}`);
-      const p = data?.[0] || {};
-      setUser({ id: u.id, email: authEmail, username: p.username || authEmail, is_premium: !!p.is_premium });
-    }
+  const { user: u, error } = await _sb.signIn(authEmail, authPass);
+  if (error) { setAuthErr(error); setAuthBusy(false); return; }
+  const { data } = await _sb.select("profiles", `?id=eq.${u.id}`);
+  const p = data?.[0] || {};
+  setUser({ id: u.id, email: authEmail, username: p.username || authEmail, is_premium: !!p.is_premium });
+  setMyBar(Array.isArray(p.my_bar) ? p.my_bar : []);
+
+  const { data: ratingsData } = await _sb.select("ratings", `?user_id=eq.${u.id}`);
+  if (ratingsData) {
+    const ratingsMap = {};
+    ratingsData.forEach(r => { ratingsMap[r.drink_id] = r.stars; });
+    setMyRatings(ratingsMap);
+  }
+
+  const { data: journalData } = await _sb.select("journal_entries", `?user_id=eq.${u.id}&order=created_at.desc`);
+  if (journalData) {
+    setJournalEntries(journalData.map(j => ({
+      id: j.id, drinkId: j.drink_id, drinkName: j.drink_name,
+      notes: j.personal_notes, where: j.tried_where,
+      wouldOrderAgain: j.would_order_again, createdAt: j.created_at
+    })));
+  }
+
+  const { data: savedData } = await _sb.select("saved_drinks", `?user_id=eq.${u.id}`);
+  if (savedData) {
+    const savedMap = {};
+    savedData.forEach(s => { savedMap[s.drink_id] = true; });
+    setMySaved(savedMap);
+  }
+}
     setShowAuth(false); setAuthEmail(""); setAuthPass(""); setAuthUser(""); setAuthBusy(false);
   }
 
@@ -1031,10 +1058,34 @@ When recommending drinks, reference the actual recipes. If someone asks what the
     }
   }
 
-  function toggleSaved(id) {
-    if (!user) { setShowAuth(true); return; }
-    setMySaved(s => ({ ...s, [id]: !s[id] }));
+async function toggleMyBarSpirit(s) {
+  const updated = myBar.includes(s) ? myBar.filter(x => x !== s) : [...myBar, s];
+  setMyBar(updated);
+  if (user && SUPABASE_URL !== "YOUR_SUPABASE_URL") {
+    await _sb.upsert("profiles", { id: user.id, my_bar: updated }, "id");
   }
+}
+
+async function clearMyBar() {
+  setMyBar([]);
+  setBarResults(null);
+  if (user && SUPABASE_URL !== "YOUR_SUPABASE_URL") {
+    await _sb.upsert("profiles", { id: user.id, my_bar: [] }, "id");
+  }
+}
+  
+  async function toggleSaved(id) {
+  if (!user) { setShowAuth(true); return; }
+  const willSave = !mySaved[id];
+  setMySaved(s => ({ ...s, [id]: !s[id] }));
+  if (SUPABASE_URL !== "YOUR_SUPABASE_URL") {
+    if (willSave) {
+      await _sb.upsert("saved_drinks", { user_id: user.id, drink_id: String(id) }, "user_id,drink_id");
+    } else {
+      await _sb.delete("saved_drinks", `?user_id=eq.${user.id}&drink_id=eq.${String(id)}`);
+    }
+  }
+}
 
   async function submitCommunityDrink() {
     if (!user) { setShowAuth(true); return; }
@@ -1564,7 +1615,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
             <div style={{ fontSize:"0.75rem", color:"#C8A97E", fontStyle:"italic", marginBottom:11 }}>What's in your bar? ({myBar.length} selected)</div>
             <div style={{ display:"flex", flexWrap:"wrap", gap:6, marginBottom:14 }}>
               {ALL_SPIRITS_LIST.map(s=>(
-                <button key={s} onClick={()=>setMyBar(b=>b.includes(s)?b.filter(x=>x!==s):[...b,s])} style={{ padding:"4px 11px", border:`1px solid ${myBar.includes(s)?PREMIUM_COLOR:"#2A2010"}`, borderRadius:20, background:myBar.includes(s)?PREMIUM_COLOR+"25":"transparent", color:myBar.includes(s)?PREMIUM_COLOR:"#5A4A38", cursor:"pointer", fontSize:"0.68rem" }}>
+                <button key={s} onClick={()=>toggleMyBarSpirit(s)} style={{ padding:"4px 11px", border:`1px solid ${myBar.includes(s)?PREMIUM_COLOR:"#2A2010"}`, borderRadius:20, background:myBar.includes(s)?PREMIUM_COLOR+"25":"transparent", color:myBar.includes(s)?PREMIUM_COLOR:"#5A4A38", cursor:"pointer", fontSize:"0.68rem" }}>
                   {myBar.includes(s)?"✓ ":""}{s}
                 </button>
               ))}
@@ -1573,7 +1624,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
               <button onClick={runBarFilter} style={{ flex:1, padding:9, background:`linear-gradient(135deg,${PREMIUM_COLOR},#E8C840)`, border:"none", borderRadius:8, color:"#0A0806", fontSize:"0.8rem", fontFamily:"Georgia,serif", fontStyle:"italic", fontWeight:"bold", cursor:"pointer" }}>
                 Find my drinks →
               </button>
-              {myBar.length>0&&<button onClick={()=>{setMyBar([]);setBarResults(null);}} style={{ padding:"9px 12px", background:"#1A1510", border:"1px solid #221808", color:"#5A4A38", borderRadius:8, cursor:"pointer", fontSize:"0.73rem" }}>Clear</button>}
+              {myBar.length>0&&<button onClick={clearMyBar} style={{ padding:"9px 12px", background:"#1A1510", border:"1px solid #221808", color:"#5A4A38", borderRadius:8, cursor:"pointer", fontSize:"0.73rem" }}>Clear</button>}
             </div>
           </div>
           {barResults!==null && (
