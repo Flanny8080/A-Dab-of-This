@@ -1017,7 +1017,7 @@ Spirits guide covers: Whiskey, Bourbon, Scotch, Rum, Gin, Vodka, Tequila, Brandy
 When recommending drinks, reference the actual recipes. If someone asks what they can make with specific spirits, check the ingredients above. Have fun with it.`;
 
   try {
-    const response = await fetch("/api/chat", {
+    const response = await fetch("https://a-dab-of-this.vercel.app/api/chat", {
       method: "POST",
       headers: { "Content-Type":  "application/json" },
       body: JSON.stringify({
