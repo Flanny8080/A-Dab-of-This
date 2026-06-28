@@ -791,8 +791,10 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 //   created_at timestamptz default now()
 // );
 // -- Then enable RLS on each table and add policies for authenticated users.
+
+let _sbToken = null;
 const _sb = {
-  _h: () => ({ "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}` }),
+  _h: () => ({ "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${_sbToken || SUPABASE_ANON_KEY}` }),
   _url: (t) => `${SUPABASE_URL}/rest/v1/${t}`,
   async select(table, q = "") {
     try { const r = await fetch(`${this._url(table)}${q}`, { headers: this._h() }); return r.ok ? { data: await r.json(), error: null } : { data: null, error: "fetch error" }; } catch { return { data: null, error: "network" }; }
@@ -804,11 +806,23 @@ const _sb = {
     try { const r = await fetch(`${this._url(table)}?on_conflict=${onConflict}`, { method: "POST", headers: { ...this._h(), Prefer: "return=representation,resolution=merge-duplicates" }, body: JSON.stringify(row) }); return r.ok ? { data: await r.json(), error: null } : { data: null, error: "upsert error" }; } catch { return { data: null, error: "network" }; }
   },
   async signUp(email, password) {
-    try { const r = await fetch(`${SUPABASE_URL}/auth/v1/signup`, { method: "POST", headers: this._h(), body: JSON.stringify({ email, password }) }); const d = await r.json(); return r.ok ? { user: d.user, error: null } : { user: null, error: d.error_description || d.msg }; } catch { return { user: null, error: "network" }; }
-  },
+  try {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/signup`, { method: "POST", headers: this._h(), body: JSON.stringify({ email, password }) });
+    const d = await r.json();
+    if (!r.ok) return { user: null, error: d.error_description || d.msg };
+    if (d.access_token) _sbToken = d.access_token;
+    return { user: d.user, error: null, access_token: d.access_token || null };
+  } catch { return { user: null, error: "network" }; }
+},
   async signIn(email, password) {
-    try { const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: this._h(), body: JSON.stringify({ email, password }) }); const d = await r.json(); return r.ok ? { user: d.user, error: null } : { user: null, error: d.error_description || d.msg }; } catch { return { user: null, error: "network" }; }
-  },
+  try {
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: "POST", headers: this._h(), body: JSON.stringify({ email, password }) });
+    const d = await r.json();
+    if (!r.ok) return { user: null, error: d.error_description || d.msg };
+    _sbToken = d.access_token;
+    return { user: d.user, error: null, access_token: d.access_token };
+  } catch { return { user: null, error: "network" }; }
+},
   async delete(table, q = "") {
   try { const r = await fetch(`${this._url(table)}${q}`, { method: "DELETE", headers: this._h() }); return r.ok ? { error: null } : { error: "delete error" }; } catch { return { error: "network" }; }
   },
@@ -846,37 +860,10 @@ export default function App() {
   const [authUser, setAuthUser] = useState(""); const [authErr, setAuthErr] = useState("");
   const [authBusy, setAuthBusy] = useState(false);
 
-  async function handleAuth() {
-    setAuthErr(""); setAuthBusy(true);
-    const isDemoMode = SUPABASE_URL === "YOUR_SUPABASE_URL";
-    if (isDemoMode) {
-      const store = JSON.parse(sessionStorage.getItem("demo_users") || "{}");
-      if (authMode === "signup") {
-        if (!authUser.trim()) { setAuthErr("Username required."); setAuthBusy(false); return; }
-        if (store[authEmail]) { setAuthErr("Email already in use."); setAuthBusy(false); return; }
-        const u = { id: Date.now().toString(), email: authEmail, username: authUser.trim(), is_premium: false };
-        store[authEmail] = { ...u, pass: authPass };
-        sessionStorage.setItem("demo_users", JSON.stringify(store));
-        setUser(u);
-      } else {
-        const u = store[authEmail];
-        if (!u || u.pass !== authPass) { setAuthErr("Email or password incorrect."); setAuthBusy(false); return; }
-        setUser({ id: u.id, email: u.email, username: u.username, is_premium: u.is_premium });
-      }
-      setShowAuth(false); setAuthEmail(""); setAuthPass(""); setAuthUser(""); setAuthBusy(false); return;
-    }
-    // Real Supabase
-    if (authMode === "signup") {
-      const { user: u, error } = await _sb.signUp(authEmail, authPass);
-      if (error) { setAuthErr(error); setAuthBusy(false); return; }
-      await _sb.insert("profiles", { id: u.id, username: authUser.trim() });
-      setUser({ id: u.id, email: authEmail, username: authUser.trim(), is_premium: false });
-    } else {
-  const { user: u, error } = await _sb.signIn(authEmail, authPass);
-  if (error) { setAuthErr(error); setAuthBusy(false); return; }
+async function loadUserData(u) {
   const { data } = await _sb.select("profiles", `?id=eq.${u.id}`);
   const p = data?.[0] || {};
-  setUser({ id: u.id, email: authEmail, username: p.username || authEmail, is_premium: !!p.is_premium });
+  setUser({ id: u.id, email: u.email, username: p.username || u.email, is_premium: !!p.is_premium });
   setMyBar(Array.isArray(p.my_bar) ? p.my_bar : []);
 
   const { data: ratingsData } = await _sb.select("ratings", `?user_id=eq.${u.id}`);
@@ -901,6 +888,38 @@ export default function App() {
     savedData.forEach(s => { savedMap[s.drink_id] = true; });
     setMySaved(savedMap);
   }
+}
+  
+  async function handleAuth() {
+    setAuthErr(""); setAuthBusy(true);
+    const isDemoMode = SUPABASE_URL === "YOUR_SUPABASE_URL";
+    if (isDemoMode) {
+      const store = JSON.parse(sessionStorage.getItem("demo_users") || "{}");
+      if (authMode === "signup") {
+        if (!authUser.trim()) { setAuthErr("Username required."); setAuthBusy(false); return; }
+        if (store[authEmail]) { setAuthErr("Email already in use."); setAuthBusy(false); return; }
+        const u = { id: Date.now().toString(), email: authEmail, username: authUser.trim(), is_premium: false };
+        store[authEmail] = { ...u, pass: authPass };
+        sessionStorage.setItem("demo_users", JSON.stringify(store));
+        setUser(u);
+      } else {
+  const u = store[authEmail];
+  if (!u || u.pass !== authPass) { setAuthErr("Email or password incorrect."); setAuthBusy(false); return; }
+  setUser({ id: u.id, email: u.email, username: u.username, is_premium: u.is_premium });
+}
+      setShowAuth(false); setAuthEmail(""); setAuthPass(""); setAuthUser(""); setAuthBusy(false); return;
+    }
+    // Real Supabase
+    if (authMode === "signup") {
+      const { user: u, error } = await _sb.signUp(authEmail, authPass);
+      if (error) { setAuthErr(error); setAuthBusy(false); return; }
+      await _sb.insert("profiles", { id: u.id, username: authUser.trim() });
+      setUser({ id: u.id, email: authEmail, username: authUser.trim(), is_premium: false });
+   } else {
+  const { user: u, error, access_token } = await _sb.signIn(authEmail, authPass);
+  if (error) { setAuthErr(error); setAuthBusy(false); return; }
+  localStorage.setItem("dab_session", JSON.stringify({ access_token, user: { id: u.id, email: u.email } }));
+  await loadUserData(u);
 }
     setShowAuth(false); setAuthEmail(""); setAuthPass(""); setAuthUser(""); setAuthBusy(false);
   }
@@ -948,16 +967,14 @@ useEffect(() => {
 }, []);
   
   useEffect(() => {
-    async function load() {
-      try {
-        const [r, d] = await Promise.all([window.storage.get("cr_v3", true), window.storage.get("cd_v3", true)]);
-        if (r) setCommunityRatings(JSON.parse(r.value));
-        if (d) setCommunityDrinks(JSON.parse(d.value));
-      } catch {}
-      setStorageReady(true);
-    }
-    load();
-  }, []);
+  const saved = localStorage.getItem("dab_session");
+  if (saved) {
+    try {
+      const { access_token, user: u } = JSON.parse(saved);
+      if (access_token && u) { _sbToken = access_token; loadUserData(u); }
+    } catch {}
+  }
+}, []);
 
   // ── Personal data ─────────────────────────────────────────────────────────
   const [mySaved, setMySaved] = useState({});
@@ -1726,7 +1743,7 @@ async function clearMyBar() {
               ))}
             </>
           )}
-          <button onClick={()=>{setUser(null);setMySaved({});setMyRatings({});setJournalEntries([]);setTab("home");}} style={{ marginTop:18, padding:"6px 15px", background:"#1A1510", border:"1px solid #221808", color:"#5A4A38", borderRadius:20, cursor:"pointer", fontSize:"0.73rem", fontFamily:"Georgia,serif" }}>Sign out</button>
+          <button onClick={()=>{_sbToken=null;localStorage.removeItem("dab_session");setUser(null);setMySaved({});setMyRatings({});setMyBar([]);setJournalEntries([]);setTab("home");}}>Sign out</button>
         </div>
       )}
 
