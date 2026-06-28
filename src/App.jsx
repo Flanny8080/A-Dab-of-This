@@ -1079,7 +1079,7 @@ async function toggleMyBarSpirit(s) {
   const updated = myBar.includes(s) ? myBar.filter(x => x !== s) : [...myBar, s];
   setMyBar(updated);
   if (user && SUPABASE_URL !== "YOUR_SUPABASE_URL") {
-    await _sb.upsert("profiles", { id: user.id, my_bar: updated }, "id");
+    await _sb.upsert("profiles", { id: user.id, username: user.username, my_bar: updated }, "id");
   }
 }
 
@@ -1087,7 +1087,7 @@ async function clearMyBar() {
   setMyBar([]);
   setBarResults(null);
   if (user && SUPABASE_URL !== "YOUR_SUPABASE_URL") {
-    await _sb.upsert("profiles", { id: user.id, my_bar: [] }, "id");
+    await _sb.upsert("profiles", { id: user.id, username: user.username, my_bar: [] }, "id");
   }
 }
   
@@ -1350,15 +1350,9 @@ async function clearMyBar() {
   setUser(u=>({...u,is_premium:true}));
   setShowPremium(false);
   // Persist premium status to Supabase so it survives logout/login
-  if (SUPABASE_URL !== "YOUR_SUPABASE_URL") {
-    try {
-      await fetch(`${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${SUPABASE_ANON_KEY}`, Prefer: "return=minimal" },
-        body: JSON.stringify({ is_premium: true }),
-      });
-    } catch {}
-  }
+ if (SUPABASE_URL !== "YOUR_SUPABASE_URL") {
+  await _sb.upsert("profiles", { id: user.id, username: user.username, is_premium: true }, "id");
+}
 }} style={{ width:"100%", marginTop:16, padding:12, background:`linear-gradient(135deg,${PREMIUM_COLOR},#E8C840)`, border:"none", borderRadius:8, color:"#0A0806", fontSize:"0.9rem", fontFamily:"Georgia,serif", fontStyle:"italic", fontWeight:"bold", cursor:"pointer" }}>
   Unlock for $2.99 →
 </button>
