@@ -976,6 +976,28 @@ useEffect(() => {
   }
 }, []);
 
+  useEffect(() => {
+  async function load() {
+    try {
+      const { data } = await _sb.select("ratings", "");
+      if (data) {
+        const map = {};
+        data.forEach(r => {
+          if (!map[r.drink_id]) map[r.drink_id] = {};
+          map[r.drink_id][r.id] = r.stars;
+        });
+        setCommunityRatings(map);
+      }
+    } catch {}
+    try {
+      const d = await window.storage.get("cd_v3", true);
+      if (d) setCommunityDrinks(JSON.parse(d.value));
+    } catch {}
+    setStorageReady(true);
+  }
+  load();
+}, []);
+
   // ── Personal data ─────────────────────────────────────────────────────────
   const [mySaved, setMySaved] = useState({});
   const [myRatings, setMyRatings] = useState({});
