@@ -1060,7 +1060,7 @@ When recommending drinks, reference the actual recipes. If someone asks what the
   function getDR(id) {
     const map = communityRatings[String(id)] || {};
     const { avg, count } = calcAvg(map);
-    return { avg, count, mine: user ? map[user.username] : null };
+    return { avg, count, mine: user ? (myRatings[id] ?? null) : null };
   }
 
   async function rateDrink(drinkId, stars) {
