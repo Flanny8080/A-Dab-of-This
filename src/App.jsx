@@ -990,9 +990,17 @@ useEffect(() => {
       }
     } catch {}
     try {
-      const d = await window.storage.get("cd_v3", true);
-      if (d) setCommunityDrinks(JSON.parse(d.value));
-    } catch {}
+  const { data: cdData } = await _sb.select("community_drinks", "");
+  if (cdData) {
+    setCommunityDrinks(cdData.map(d => ({
+      id: d.id, cat: "community", userId: d.user_id,
+      name: d.name, spirit: d.spirit || "",
+      ingredients: Array.isArray(d.ingredients) ? d.ingredients : [],
+      garnish: d.garnish || "", notes: d.notes || "", where: d.where_found || "",
+      submittedBy: d.submitted_by, submittedAt: d.created_at, spirits: []
+    })));
+  }
+} catch {}
     setStorageReady(true);
   }
   load();
@@ -1012,6 +1020,7 @@ useEffect(() => {
   const [nIngredients, setNIngredients] = useState(""); const [nGarnish, setNGarnish] = useState("");
   const [nNotes, setNNotes] = useState(""); const [nWhere, setNWhere] = useState("");
   const [submitStatus, setSubmitStatus] = useState("");
+  const [editingDrinkId, setEditingDrinkId] = useState(null);
 
   // ── Tasting journal form ──────────────────────────────────────────────────
   const [jDrink, setJDrink] = useState(null); const [jNotes, setJNotes] = useState("");
@@ -1127,23 +1136,58 @@ async function clearMyBar() {
 }
 
   async function submitCommunityDrink() {
-    if (!user) { setShowAuth(true); return; }
-    if (!nName.trim() || !nIngredients.trim()) { setSubmitStatus("error"); return; }
-    setSubmitStatus("saving");
-    const drink = {
-      id: "c_" + Date.now(), cat: "community", name: nName.trim(), spirit: nSpirit.trim(),
-      ingredients: nIngredients.split("\n").map(s => s.trim()).filter(Boolean),
-      garnish: nGarnish.trim(), notes: nNotes.trim(), where: nWhere.trim(),
-      submittedBy: user.username, submittedAt: new Date().toISOString(), spirits: [],
-    };
-    const updated = [drink, ...communityDrinks];
-    setCommunityDrinks(updated);
-    try {
-      await window.storage.set("cd_v3", JSON.stringify(updated), true);
-      setSubmitStatus("saved"); setNName(""); setNSpirit(""); setNIngredients(""); setNGarnish(""); setNNotes(""); setNWhere("");
-      setTimeout(() => setSubmitStatus(""), 3000);
-    } catch { setSubmitStatus("error"); }
+  if (!user) { setShowAuth(true); return; }
+  if (!nName.trim() || !nIngredients.trim()) { setSubmitStatus("error"); return; }
+  setSubmitStatus("saving");
+  const ingredientsArr = nIngredients.split("\n").map(s => s.trim()).filter(Boolean);
+
+  if (editingDrinkId) {
+    const { error } = await _sb.upsert("community_drinks", {
+      id: editingDrinkId, user_id: user.id, name: nName.trim(), spirit: nSpirit.trim(),
+      ingredients: ingredientsArr, garnish: nGarnish.trim(), notes: nNotes.trim(),
+      where_found: nWhere.trim(), submitted_by: user.username
+    }, "id");
+    if (error) { setSubmitStatus("error"); return; }
+    setCommunityDrinks(cds => cds.map(d => d.id === editingDrinkId ? {
+      ...d, name: nName.trim(), spirit: nSpirit.trim(), ingredients: ingredientsArr,
+      garnish: nGarnish.trim(), notes: nNotes.trim(), where: nWhere.trim()
+    } : d));
+    setEditingDrinkId(null);
+  } else {
+    const { data, error } = await _sb.insert("community_drinks", {
+      user_id: user.id, name: nName.trim(), spirit: nSpirit.trim(),
+      ingredients: ingredientsArr, garnish: nGarnish.trim(), notes: nNotes.trim(),
+      where_found: nWhere.trim(), submitted_by: user.username
+    });
+    if (error || !data?.[0]) { setSubmitStatus("error"); return; }
+    const row = data[0];
+    setCommunityDrinks(cds => [{
+      id: row.id, cat: "community", userId: user.id, name: row.name, spirit: row.spirit || "",
+      ingredients: ingredientsArr, garnish: row.garnish || "", notes: row.notes || "",
+      where: row.where_found || "", submittedBy: row.submitted_by, submittedAt: row.created_at, spirits: []
+    }, ...cds]);
   }
+
+  setSubmitStatus("saved"); setNName(""); setNSpirit(""); setNIngredients(""); setNGarnish(""); setNWhere("");
+  setTimeout(() => setSubmitStatus(""), 3000);
+}
+
+  function editCommunityDrink(d) {
+  setNName(d.name); setNSpirit(d.spirit || ""); setNIngredients(d.ingredients.join("\n"));
+  setNGarnish(d.garnish || ""); setNWhere(d.where || "");
+  setEditingDrinkId(d.id);
+  setCommunityTab("share");
+  setSelectedDrink(null);
+}
+
+async function deleteCommunityDrink(id) {
+  if (!window.confirm("Delete this submission?")) return;
+  const { error } = await _sb.delete("community_drinks", `?id=eq.${id}`);
+  if (!error) {
+    setCommunityDrinks(cds => cds.filter(d => d.id !== id));
+    setSelectedDrink(null);
+  }
+}
 
   function runBarFilter() {
     if (myBar.length === 0) { setBarResults([]); return; }
@@ -1807,6 +1851,12 @@ async function clearMyBar() {
               )}
               <div style={{ textAlign:"center", marginTop:10, fontSize:"0.58rem", color:"#2A2010", fontStyle:"italic" }}>
                 {selectedDrink.cat==="community"?"Community submission":`From "A Dab of This, A Dab of That" — Andrew Flannigan`}
+                {selectedDrink.cat==="community"&&user&&selectedDrink.userId===user.id&&(
+  <div style={{ display:"flex", gap:8, marginTop:10 }}>
+    <button onClick={()=>editCommunityDrink(selectedDrink)} style={{ flex:1, padding:8, background:"#1A1510", border:"1px solid #4A8CC820", borderRadius:7, color:"#4A8CC8", cursor:"pointer", fontSize:"0.72rem", fontFamily:"Georgia,serif" }}>Edit</button>
+    <button onClick={()=>deleteCommunityDrink(selectedDrink.id)} style={{ flex:1, padding:8, background:"#1A1510", border:"1px solid #C8404020", borderRadius:7, color:"#C84040", cursor:"pointer", fontSize:"0.72rem", fontFamily:"Georgia,serif" }}>Delete</button>
+  </div>
+)}
               </div>
             </div>
           </div>
