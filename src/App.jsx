@@ -793,16 +793,41 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 // -- Then enable RLS on each table and add policies for authenticated users.
 
 let _sbToken = null;
+let _sbRefreshToken = null;
+let _sbExpiresAt = 0;
+
 const _sb = {
   _h: () => ({ "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY, Authorization: `Bearer ${_sbToken || SUPABASE_ANON_KEY}` }),
   _url: (t) => `${SUPABASE_URL}/rest/v1/${t}`,
+  async _ensureToken() {
+    if (!_sbToken || !_sbRefreshToken) return;
+    if (Date.now() < _sbExpiresAt - 60000) return;
+    try {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", apikey: SUPABASE_ANON_KEY },
+        body: JSON.stringify({ refresh_token: _sbRefreshToken }),
+      });
+      const d = await r.json();
+      if (r.ok && d.access_token) {
+        _sbToken = d.access_token;
+        _sbRefreshToken = d.refresh_token || _sbRefreshToken;
+        _sbExpiresAt = Date.now() + (d.expires_in || 3600) * 1000;
+        const saved = JSON.parse(localStorage.getItem("dab_session") || "{}");
+        localStorage.setItem("dab_session", JSON.stringify({ ...saved, access_token: _sbToken, refresh_token: _sbRefreshToken, expires_at: _sbExpiresAt }));
+      }
+    } catch {}
+  },
   async select(table, q = "") {
+    await this._ensureToken();
     try { const r = await fetch(`${this._url(table)}${q}`, { headers: this._h() }); return r.ok ? { data: await r.json(), error: null } : { data: null, error: "fetch error" }; } catch { return { data: null, error: "network" }; }
   },
   async insert(table, row) {
+    await this._ensureToken();
     try { const r = await fetch(this._url(table), { method: "POST", headers: { ...this._h(), Prefer: "return=representation" }, body: JSON.stringify(row) }); return r.ok ? { data: await r.json(), error: null } : { data: null, error: "insert error" }; } catch { return { data: null, error: "network" }; }
   },
   async upsert(table, row, onConflict) {
+    await this._ensureToken();
     try { const r = await fetch(`${this._url(table)}?on_conflict=${onConflict}`, { method: "POST", headers: { ...this._h(), Prefer: "return=representation,resolution=merge-duplicates" }, body: JSON.stringify(row) }); return r.ok ? { data: await r.json(), error: null } : { data: null, error: "upsert error" }; } catch { return { data: null, error: "network" }; }
   },
   async signUp(email, password) {
@@ -811,7 +836,9 @@ const _sb = {
     const d = await r.json();
     if (!r.ok) return { user: null, error: d.error_description || d.msg };
     if (d.access_token) _sbToken = d.access_token;
-    return { user: d.user, error: null, access_token: d.access_token || null };
+      if (d.refresh_token) _sbRefreshToken = d.refresh_token;
+      if (d.expires_in) _sbExpiresAt = Date.now() + d.expires_in * 1000;
+      return { user: d.user, error: null, access_token: d.access_token || null };
   } catch { return { user: null, error: "network" }; }
 },
   async signIn(email, password) {
@@ -820,11 +847,14 @@ const _sb = {
     const d = await r.json();
     if (!r.ok) return { user: null, error: d.error_description || d.msg };
     _sbToken = d.access_token;
-    return { user: d.user, error: null, access_token: d.access_token };
+      _sbRefreshToken = d.refresh_token || null;
+      _sbExpiresAt = Date.now() + (d.expires_in || 3600) * 1000;
+      return { user: d.user, error: null, access_token: d.access_token };
   } catch { return { user: null, error: "network" }; }
 },
   async delete(table, q = "") {
-  try { const r = await fetch(`${this._url(table)}${q}`, { method: "DELETE", headers: this._h() }); return r.ok ? { error: null } : { error: "delete error" }; } catch { return { error: "network" }; }
+    await this._ensureToken();
+    try { const r = await fetch(`${this._url(table)}${q}`, { method: "DELETE", headers: this._h() }); return r.ok ? { error: null } : { error: "delete error" }; } catch { return { error: "network" }; }
   },
 };
 
@@ -918,7 +948,7 @@ async function loadUserData(u) {
    } else {
   const { user: u, error, access_token } = await _sb.signIn(authEmail, authPass);
   if (error) { setAuthErr(error); setAuthBusy(false); return; }
-  localStorage.setItem("dab_session", JSON.stringify({ access_token, user: { id: u.id, email: u.email } }));
+  localStorage.setItem("dab_session", JSON.stringify({ access_token, refresh_token: _sbRefreshToken, expires_at: _sbExpiresAt, user: { id: u.id, email: u.email } }));
   await loadUserData(u);
 }
     setShowAuth(false); setAuthEmail(""); setAuthPass(""); setAuthUser(""); setAuthBusy(false);
@@ -970,8 +1000,13 @@ useEffect(() => {
   const saved = localStorage.getItem("dab_session");
   if (saved) {
     try {
-      const { access_token, user: u } = JSON.parse(saved);
-      if (access_token && u) { _sbToken = access_token; loadUserData(u); }
+      const { access_token, refresh_token, expires_at, user: u } = JSON.parse(saved);
+        if (access_token && u) {
+          _sbToken = access_token;
+          _sbRefreshToken = refresh_token || null;
+          _sbExpiresAt = expires_at || 0;
+          _sb._ensureToken().then(() => loadUserData(u));
+        }
     } catch {}
   }
 }, []);
